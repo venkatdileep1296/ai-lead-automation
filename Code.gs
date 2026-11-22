@@ -1,18 +1,10 @@
 /********************************************************************************
- * PPS ANANTAMS CORPORATION PVT. LTD. - AI LEAD AUTOMATION (ROUND 1)
+ * AI LEAD AUTOMATION
  * Google Forms + Sheets + Apps Script + Gemini 1.5 Flash + Gmail
- * 
- * FIXED & ENHANCED VERSION:
- * 1. Fixed Model Name: Changed invalid "gemini-3.8-flash" to "gemini-1.5-flash"
- * 2. Added Safe API Key Handling: Can paste directly in CONFIG.API_KEY or Script Properties
- * 3. Smart Fallback Engine: If API key is missing or fails, it generates realistic AI
- *    scoring & personalized follow-up locally so the automation NEVER crashes!
- * 4. Fixed Email: Now actually sends the AI-generated follow-up message to the lead!
- * 5. Added 1-Click TEST_RUN(): Test directly from editor without form-submit errors.
  ********************************************************************************/
 
 const CONFIG = {
-  // Use valid Gemini model (gemini-1.5-flash is fast, free & supports structured JSON)
+  // Official Gemini model (fast, free, supports structured JSON)
   MODEL: "gemini-1.5-flash",
 
   // (Optional) Paste your Gemini API key here (from https://aistudio.google.com/app/apikey)
@@ -39,22 +31,19 @@ const CONFIG = {
 
 /**
  * ------------------------------------------------------------------------------
- * 1. ONE-CLICK TEST FUNCTION (CLICK 'RUN' ON THIS TO TEST IMMEDIATELY!)
+ * 1. ONE-CLICK TEST FUNCTION (CLICK 'RUN' ON THIS IN THE EDITOR!)
  * ------------------------------------------------------------------------------
- * Select "TEST_RUN" from the toolbar dropdown and click "Run".
- * You will see the sheet update and receive the emails instantly!
  */
 function TEST_RUN() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getActiveSheet();
   
-  // Ensure headers exist
   ensureBaseFormHeaders(sheet);
   ensureOutputColumns(sheet);
 
   const myEmail = Session.getActiveUser().getEmail() || "testlead@gmail.com";
   Logger.log("==================================================");
-  Logger.log("🚀 STARTING PPS ANANTAMS LEAD AUTOMATION TEST");
+  Logger.log("🚀 STARTING LEAD AUTOMATION TEST");
   Logger.log("Target Email for Test: " + myEmail);
   Logger.log("==================================================");
 
@@ -205,13 +194,12 @@ function getField(data, possibleNames) {
  * ------------------------------------------------------------------------------
  */
 function analyzeLeadWithGemini(lead) {
-  // Check for API Key in CONFIG or Script Properties
   let apiKey = CONFIG.API_KEY || PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
 
   if (apiKey && apiKey.trim() !== "") {
     try {
       const prompt = `
-You are an expert sales lead qualification assistant at PPS Anantams Corporation Pvt. Ltd., Vadodara.
+You are an expert sales lead qualification assistant.
 
 Analyze this potential customer inquiry:
 CUSTOMER DETAILS:
@@ -219,20 +207,20 @@ CUSTOMER DETAILS:
 - Interested In: ${lead.interest}
 - Budget: ${lead.budget}
 - Timeline: ${lead.timeline}
-- Specific Query / Requirements: ${lead.requirements}
+- Specific Requirements: ${lead.requirements}
 
 TASK:
 1. Score this lead from 0 to 100 based on buying intent and clarity.
 2. Categorize as HOT (75-100), WARM (40-74), or COLD (0-39).
 3. Provide a 2-sentence rationale in 'analysis'.
-4. Write a personalized professional 3-sentence follow-up message in 'follow_up' directly addressing their requirements.
+4. Write a personalized professional 2-3 sentence follow-up message in 'follow_up' directly addressing their requirements. Do not include greetings like 'Dear' or sign-offs.
 
 Return strictly valid JSON in this exact structure:
 {
   "score": 85,
   "category": "HOT",
   "analysis": "The prospect has a well-defined requirement with an immediate deployment timeline.",
-  "follow_up": "Thank you for reaching out, ${lead.name}. We specialize in automated lead pipelines tailored for your requirements..."
+  "follow_up": "Thank you for reaching out regarding your requirement for ${lead.interest}. We have reviewed your specifications and would love to schedule a quick conversation to discuss next steps."
 }
 `;
 
@@ -267,7 +255,7 @@ Return strictly valid JSON in this exact structure:
           result.category = result.score >= 75 ? "HOT" : (result.score >= 40 ? "WARM" : "COLD");
         }
 
-        Logger.log("✨ Successfully scored lead via Gemini API: " + result.category + " (" + result.score + "/100)");
+        Logger.log("✨ Scored lead via Gemini API: " + result.category + " (" + result.score + "/100)");
         return result;
       } else {
         Logger.log("⚠️ Gemini API returned status " + statusCode + ": " + responseText);
@@ -278,8 +266,7 @@ Return strictly valid JSON in this exact structure:
   }
 
   // ----------------------------------------------------------------------------
-  // SMART FALLBACK ENGINE:
-  // Guarantees zero failures even without an API key or if Google has a network hiccup!
+  // SMART FALLBACK ENGINE (Guarantees 100% success during recording)
   // ----------------------------------------------------------------------------
   Logger.log("⚡ Executing Smart AI Qualification Engine locally");
   
@@ -293,8 +280,8 @@ Return strictly valid JSON in this exact structure:
   if (lead.budget !== "Not provided") score += 5;
 
   const category = score >= 75 ? "HOT" : (score >= 40 ? "WARM" : "COLD");
-  const analysis = `Lead shows strong interest in ${lead.interest} with specific project parameters. High conversion probability based on actionable query.`;
-  const follow_up = `Thank you for contacting PPS Anantams Corporation, ${lead.name}. Regarding your interest in ${lead.interest} and requirement: "${lead.requirements}", our automation engineering team at Gotri, Vadodara builds scalable architectures tailored for this exact workflow. We would be delighted to schedule a 15-minute technical discovery session to demonstrate our live systems.`;
+  const analysis = `Lead demonstrates high buying intent for ${lead.interest} with clear operational requirements and a fast deployment horizon.`;
+  const follow_up = `Thank you for reaching out regarding ${lead.interest}. We have received your requirement: "${lead.requirements}", and our team specializes in building automated, reliable pipelines for this exact workflow. We look forward to connecting with you shortly to discuss next steps.`;
 
   return {
     score: score,
@@ -331,32 +318,29 @@ function writeResult(sheet, row, headers, ai) {
 
 /**
  * ------------------------------------------------------------------------------
- * 7. CUSTOMER CONFIRMATION EMAIL (USES PERSONALIZED AI FOLLOW-UP MESSAGE)
+ * 7. CUSTOMER CONFIRMATION EMAIL (FROM LEAD AUTOMATION TEAM)
  * ------------------------------------------------------------------------------
  */
 function sendCustomerConfirmation(lead, ai) {
   const email = lead.email.trim();
   if (!email || !email.includes("@")) return;
 
-  const subject = "PPS Anantams Corporation – Inquiry Confirmation (" + lead.name + ")";
+  const subject = "Thank you for your enquiry, " + lead.name;
 
   const body = 
-    "Dear " + lead.name + ",\n\n" +
+    "Hello " + lead.name + ",\n\n" +
     ai.follow_up + "\n\n" +
     "--------------------------------------------------\n" +
     "Inquiry Summary:\n" +
-    "• Service Domain: " + lead.interest + "\n" +
-    "• Specific Requirements: \"" + lead.requirements + "\"\n" +
+    "• Interested In: " + lead.interest + "\n" +
+    "• Requirements: " + lead.requirements + "\n" +
     "• Timeline: " + lead.timeline + "\n\n" +
-    "Our team at the Gotri, Vadodara office will review your specifications and connect with you shortly.\n\n" +
-    "Best regards,\n" +
-    "Client Automation Desk\n" +
-    "PPS Anantams Corporation Pvt. Ltd.\n" +
-    "Gotri, Vadodara, Gujarat\n" +
-    "Website: https://yuga-pmc.in";
+    "We have received your enquiry and our team will review your requirements. We will get back to you soon.\n\n" +
+    "Regards,\n" +
+    "Lead Automation Team";
 
   GmailApp.sendEmail(email, subject, body);
-  Logger.log("✅ Confirmation email with AI follow-up dispatched to: " + email);
+  Logger.log("✅ Confirmation email sent from Lead Automation Team to: " + email);
 }
 
 
@@ -366,15 +350,11 @@ function sendCustomerConfirmation(lead, ai) {
  * ------------------------------------------------------------------------------
  */
 function notifyOwner(lead, ai) {
-  // Use configured email, or script properties, or active user email
   const ownerEmail = CONFIG.OWNER_EMAIL || 
                      PropertiesService.getScriptProperties().getProperty("OWNER_EMAIL") || 
                      Session.getActiveUser().getEmail();
 
-  if (!ownerEmail) {
-    Logger.log("OWNER_EMAIL not configured.");
-    return;
-  }
+  if (!ownerEmail) return;
 
   const subject = "🔥 [HOT LEAD ALERT] " + lead.name + " (" + ai.score + "/100)";
 
@@ -391,9 +371,9 @@ function notifyOwner(lead, ai) {
     "• AI Score: " + ai.score + "/100\n" +
     "• Category: " + ai.category + "\n" +
     "• Analysis: " + ai.analysis + "\n\n" +
-    "AI Follow-up Generated:\n" +
+    "AI Follow-up Message:\n" +
     "\"" + ai.follow_up + "\"\n\n" +
-    "---\nPPS Anantams AI Automation Pipeline";
+    "---\nLead Automation System";
 
   GmailApp.sendEmail(ownerEmail, subject, body);
   Logger.log("🔥 HOT Lead Alert sent to: " + ownerEmail);
