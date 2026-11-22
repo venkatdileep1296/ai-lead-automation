@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PPS Anantams Corporation - Round 1 AI Automation Note</title>
+<style>
+  @page {
+    size: A4;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.35;
+    margin: 0;
+    padding: 20px;
+    font-size: 11pt;
+  }
+  .header {
+    border-bottom: 2px solid #0d47a1;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 16pt;
+    color: #0d47a1;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .meta-grid {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5pt;
+    color: #444;
+    background: #f1f5f9;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+  h2 {
+    font-size: 11.5pt;
+    color: #0d47a1;
+    border-left: 3.5px solid #0d47a1;
+    padding-left: 6px;
+    margin: 12px 0 6px 0;
+    text-transform: uppercase;
+  }
+  p {
+    margin: 4px 0 6px 0;
+  }
+  ul {
+    margin: 4px 0 6px 18px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  .badge {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+  .two-col {
+    display: flex;
+    gap: 15px;
+  }
+  .col {
+    flex: 1;
+  }
+  .roadmap-box {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 6px 8px;
+    background: #fafafa;
+    margin-bottom: 4px;
+    font-size: 9pt;
+  }
+  .roadmap-box strong {
+    color: #0d47a1;
+  }
+  .footer {
+    margin-top: 10px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 6px;
+    font-size: 8.5pt;
+    color: #64748b;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AI Automation Internship – Technical Evaluation Note</h1>
+  <div style="font-size: 10pt; font-weight: 600; color: #334155;">PPS Anantams Corporation Pvt. Ltd., Vadodara | Round 1 Practical Task</div>
+  <div class="meta-grid">
+    <div><strong>Candidate:</strong> [Your Full Name]</div>
+    <div><strong>University:</strong> Parul University</div>
+    <div><strong>Primary:</strong> Domain 1 (Lead Automation)</div>
+    <div><strong>Secondary:</strong> Domain 2 (WhatsApp & AI Calling)</div>
+  </div>
+</div>
+
+<h2>1. Tools & Technologies Used</h2>
+<p>
+  This solution implements an automated, zero-latency lead ingestion and response architecture using industry-standard cloud and AI tools:
+</p>
+<ul>
+  <li><strong>Intake Layer:</strong> <code>Google Forms</code> – captures prospect name, email, phone/WhatsApp, domain interest, and project requirements.</li>
+  <li><strong>Central CRM & State Logging:</strong> <code>Google Sheets</code> – acts as the live database for real-time lead tracking, timestamps, and status flags.</li>
+  <li><strong>Execution & Orchestration:</strong> <code>Google Apps Script / Webhooks</code> – event-driven serverless pipeline executing on form submission.</li>
+  <li><strong>AI Reasoning Engine:</strong> <code>Google Gemini 1.5 Flash API</code> – contextual prompt engineering generating bespoke, human-sounding replies.</li>
+  <li><strong>Omnichannel Dispatch:</strong> <code>Gmail API / WhatsApp Webhooks</code> – delivers instant personalized emails and customer confirmations.</li>
+</ul>
+
+<h2>2. How the Automation Works (Architecture)</h2>
+<p>The pipeline operates on a four-stage asynchronous workflow:</p>
+<div class="two-col">
+  <div class="col">
+    <ul>
+      <li><strong>Trigger & Ingestion:</strong> Prospect submits the Google Form. An event listener (<code>onFormSubmit</code>) immediately captures the payload.</li>
+      <li><strong>AI Prompt Contextualization:</strong> The engine formats client data and prompt parameters, instructing the LLM to directly address the specific query and propose actionable next steps rather than sending canned generic replies.</li>
+    </ul>
+  </div>
+  <div class="col">
+    <ul>
+      <li><strong>CRM State Update:</strong> The AI response, timestamp, and status (<code>Processed & Dispatched</code>) are written back to Google Sheets.</li>
+      <li><strong>Customer Dispatch:</strong> The lead instantly receives a tailored email from the PPS Anantams AI desk with formal inquiry confirmation.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>3. Work Domain Selection & Strategic Fit</h2>
+<p>
+  <strong>Primary Preference: Domain 1 – Lead Automation</strong> (CRM sheets, intake forms, automated follow-ups)<br>
+  <strong>Secondary Preference: Domain 2 – WhatsApp & AI Calling Bots</strong> (WhatsApp Cloud API, Telegram bots, AI calling)
+</p>
+<p>
+  <em>Rationale:</em> PPS Anantams and YUGA PMC manage high-value client operations (project management consultancy, trading systems, bitumen distribution). The highest leverage operational improvement lies in eliminating response delays for inbound inquiries. My experience in API integrations, prompt design, and spreadsheet automation allows me to deploy scalable lead capture workflows that convert inquiries into scheduled consultations.
+</p>
+
+<h2>4. First 30-Day Execution Roadmap (Gotri, Vadodara Office)</h2>
+<div class="roadmap-box">
+  <strong>Week 1 (Days 1–7) | Discovery, Auditing & Secure Architecture:</strong><br>
+  Audit all existing client acquisition pipelines at PPS Anantams & YUGA PMC. Establish unified Google Sheets / CRM databases with strict schema validation. Set up centralized API key security, error-handling routines, and automated failover logging.
+</div>
+
+<div class="roadmap-box">
+  <strong>Week 2 (Days 8–15) | WhatsApp Cloud API & AI Lead Scoring:</strong><br>
+  Connect incoming lead webhooks to WhatsApp Cloud API and Telegram alerts for internal sales executives. Implement an LLM-based lead scoring algorithm that classifies incoming inquiries by intent (High / Medium / Low) and alerts team leads immediately.
+</div>
+
+<div class="roadmap-box">
+  <strong>Week 3 (Days 16–23) | Multi-Stage Drip Automation & Calendar Booking:</strong><br>
+  Deploy smart follow-up drip sequences (Day 1, Day 3, Day 7) for uncontacted leads. Embed dynamic scheduling links (Google Calendar / Cal.com API) into outbound messages to automate meeting bookings with zero human back-and-forth.
+</div>
+
+<div class="roadmap-box">
+  <strong>Week 4 (Days 24–30) | Analytics Dashboard, Stress-Testing & Operations Handoff:</strong><br>
+  Build a live executive dashboard tracking response latency and pipeline velocity. Stress-test edge cases (invalid emails, API rate limits). Deliver user training and documentation to the on-site operations team at the Gotri office.
+</div>
+
+<div class="footer">
+  Candidate is available full-time for the 6-month in-person internship at Gotri, Vadodara (9:00 AM – 6:00 PM) with Parul University NOC.
+</div>
+
+</body>
+</html>
